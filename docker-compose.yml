@@ -114,7 +114,7 @@ services:
       - kafka_network
 
   spark:
-    image: bitnami/spark:3.1.2
+    image: bitnami/spark:3.2.4
     hostname: spark
     container_name: spark
     ports:
@@ -126,6 +126,9 @@ services:
       SPARK_RPC_ENCRYPTION_ENABLED: "no"
       SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: "no"
       SPARK_SSL_ENABLED: "no"
+    volumes:
+      - ./path/to/jars/hadoop-aws-3.3.2.jar:/opt/spark/jars/hadoop-aws-3.3.2.jar
+      - ./path/to/jars/aws-java-sdk-bundle-1.11.1026.jar:/opt/spark/jars/aws-java-sdk-bundle-1.11.1026.jar
     networks:
       - kafka_network
 
@@ -139,6 +142,22 @@ services:
       SPARK_MASTER: "spark://spark:7077"
     volumes:
       - ./notebooks:/home/jovyan/notebooks
+      - ./path/to/jars/hadoop-aws-3.3.2.jar:/opt/spark/jars/hadoop-aws-3.3.2.jar
+      - ./path/to/jars/aws-java-sdk-bundle-1.11.1026.jar:/opt/spark/jars/aws-java-sdk-bundle-1.11.1026.jar
+    networks:
+      - kafka_network
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
+      - MINIO_DOMAIN=minio
+    ports:
+      - 9001:9001
+      - 9000:9000
+    command: ["server", "/data", "--console-address", ":9001"]
     networks:
       - kafka_network
 
